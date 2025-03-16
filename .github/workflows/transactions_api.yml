@@ -14,7 +14,7 @@ on:
 
 jobs:
   lint:
-    name: Tests
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       # Étape 1 : Récupération du code source
