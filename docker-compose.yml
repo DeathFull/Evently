@@ -1,0 +1,19 @@
+name: "evently"
+
+services:
+  auth-api:
+    build:
+      context: .
+      dockerfile: ./services/auth-api/Dockerfile
+  events-api:
+    build:
+      context: .
+      dockerfile: ./services/events-api/Dockerfile
+  transactions-api:
+    build:
+      context: .
+      dockerfile: ./services/transactions-api/Dockerfile
+  users-api:
+    build:
+      context: .
+      dockerfile: ./services/users-api/Dockerfile
