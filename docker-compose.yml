@@ -1,19 +1,25 @@
-name: "evently"
-
 services:
   auth-api:
-    build:
-      context: .
-      dockerfile: ./services/auth-api/Dockerfile
+    image: ghcr.io/deathfull/evently-auth-api:dev
+    ports:
+      - "3000:3000"
+    deploy:
+      replicas: 2
   events-api:
-    build:
-      context: .
-      dockerfile: ./services/events-api/Dockerfile
+    image: ghcr.io/deathfull/evently-events-api:dev
+    ports:
+      - "3001:3000"
+    deploy:
+      replicas: 2
   transactions-api:
-    build:
-      context: .
-      dockerfile: ./services/transactions-api/Dockerfile
+    image: ghcr.io/deathfull/evently-transactions-api:dev
+    ports:
+      - "3002:3000"
+    deploy:
+      replicas: 2
   users-api:
-    build:
-      context: .
-      dockerfile: ./services/users-api/Dockerfile
+    image: ghcr.io/deathfull/evently-users-api:dev
+    ports:
+      - "3003:3000"
+    deploy:
+      replicas: 2
