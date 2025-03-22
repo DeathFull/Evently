@@ -5,12 +5,10 @@ import express, {
 } from "express";
 import UserRouter from "./routers/UserRouter";
 import cors from "cors";
-import fs from "node:fs/promises";
-import { parse } from "yaml";
 import swaggerUi from "swagger-ui-express";
+import { loadSwaggerDocument } from "./utils/swagger";
 
 export const app = express();
-const swaggerDocument = parse(await fs.readFile("./swagger.yaml", "utf8"));
 
 app.use(express.json());
 
@@ -33,7 +31,16 @@ app.use(
   }),
 );
 
-app.use("/api-doc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// Initialize Swagger UI
+let swaggerDocument: any = null;
+loadSwaggerDocument()
+  .then((document) => {
+    swaggerDocument = document;
+    app.use("/api-doc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  })
+  .catch((error) => {
+    console.error("Failed to load Swagger document:", error);
+  });
 app.use("/users", UserRouter);
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
