@@ -1,0 +1,285 @@
+openapi: 3.0.0
+info:
+  title: Users API
+  description: API for managing user accounts
+  version: 1.0.0
+servers:
+  - url: /api
+    description: API base path
+paths:
+  /users:
+    post:
+      summary: Create a new user
+      description: Creates a new user account with USER role by default
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreatePayload"
+      responses:
+        "200":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: Bad request - validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      summary: Get all users
+      description: Retrieves a list of all users
+      tags:
+        - Users
+      responses:
+        "200":
+          description: List of users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Success
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PublicUser"
+        "404":
+          description: No users found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: User ID
+    get:
+      summary: Get user by ID
+      description: Retrieves a specific user by their ID
+      tags:
+        - Users
+      responses:
+        "200":
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: Bad request - missing ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      summary: Update user
+      description: Updates a user's information
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdatePayload"
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: Bad request - missing ID or no fields to update
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      summary: Delete user
+      description: Deletes a user by their ID
+      tags:
+        - Users
+      responses:
+        "204":
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No content
+                  status:
+                    type: integer
+                    example: 204
+        "400":
+          description: Bad request - missing ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    UserCreatePayload:
+      type: object
+      required:
+        - email
+        - firstName
+        - lastName
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        phone:
+          type: string
+          nullable: true
+          example: "1234567890"
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        password:
+          type: string
+          format: password
+          minLength: 6
+          example: password123
+    UserUpdatePayload:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        phone:
+          type: string
+          nullable: true
+          example: "1234567890"
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        password:
+          type: string
+          format: password
+          minLength: 6
+          example: password123
+        role:
+          type: string
+          enum: [ADMIN, OPERATOR, USER]
+          example: USER
+    PublicUser:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 60d21b4667d0d8992e610c85
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        phone:
+          type: string
+          nullable: true
+          example: "1234567890"
+    UserResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Success
+        status:
+          type: integer
+          example: 200
+        data:
+          $ref: "#/components/schemas/PublicUser"
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Internal server error
+        status:
+          type: integer
+          example: 500
+        data:
+          type: object
+          nullable: true
+          example: null
