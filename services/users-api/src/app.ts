@@ -31,8 +31,7 @@ app.use(
   }),
 );
 
-// Initialize Swagger UI
-let swaggerDocument: any = null;
+let swaggerDocument = null;
 loadSwaggerDocument()
   .then((document) => {
     swaggerDocument = document;
