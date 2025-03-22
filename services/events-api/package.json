@@ -5,8 +5,9 @@
 	"main": "src/index.ts",
 	"scripts": {
 		"dev": "tsx --watch .",
-		"start": "tsx .",
-		"lint": "biome check"
+		"start": "node dist/",
+		"lint": "biome check",
+		"build": "tsc -b ."
 	},
 	"keywords": [],
 	"author": "",
