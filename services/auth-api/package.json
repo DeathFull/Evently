@@ -1,25 +1,25 @@
 {
-  "name": "auth-api",
-  "version": "1.0.0",
-  "description": "",
-  "main": "src/index.ts",
-  "scripts": {
-    "dev": "tsx --watch .",
-    "start": "node dist/",
-    "lint": "biome check",
-    "build": "tsc -b ."
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^5.0.1"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.13.10",
-    "tsx": "^4.19.3",
-    "typescript": "5.8.2"
-  }
+	"name": "auth-api",
+	"version": "1.0.0",
+	"description": "",
+	"main": "src/index.ts",
+	"scripts": {
+		"dev": "tsx --watch .",
+		"start": "node dist/",
+		"lint": "biome check",
+		"build": "tsc -b ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"express": "^5.0.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@types/express": "^5.0.0",
+		"@types/node": "^22.13.10",
+		"tsx": "^4.19.3",
+		"typescript": "5.8.2"
+	}
 }
