@@ -1,0 +1,45 @@
+name: TransactionsAPI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "services/transactions-api/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "services/transactions-api/**"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      # Étape 1 : Récupération du code source
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      # Étape 2 : Configuration de pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      # Étape 3 : Configuration de Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      # Étape 4 : Installation des dépendances
+      - name: Install dependencies
+        run: pnpm i --filter transactions-api
+
+      # Étape 5 : Exécution de Biome
+      - name: Run tests
+        run: pnpm --filter transactions-api lint
