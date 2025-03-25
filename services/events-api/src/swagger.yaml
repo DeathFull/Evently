@@ -1,0 +1,497 @@
+openapi: 3.0.0
+info:
+  title: Events API
+  description: API for managing events such as concerts, spectacles, and festivals
+  version: 1.0.0
+servers:
+  - url: /api/events
+    description: Events API base URL
+tags:
+  - name: Events
+    description: Event management endpoints
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the event
+        type:
+          type: string
+          enum: [CONCERT, SPECTACLE, FESTIVAL]
+          description: Type of event
+        date:
+          type: string
+          format: date-time
+          description: Date and time of the event
+        price:
+          type: number
+          description: Price of the event
+        location:
+          type: string
+          description: Location where the event will take place
+        name:
+          type: string
+          description: Name of the event
+      required:
+        - id
+        - type
+        - date
+        - price
+        - location
+        - name
+    EventPayload:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [CONCERT, SPECTACLE, FESTIVAL]
+          description: Type of event
+        date:
+          type: string
+          format: date-time
+          description: Date and time of the event
+        price:
+          type: number
+          description: Price of the event
+        location:
+          type: string
+          description: Location where the event will take place
+        name:
+          type: string
+          description: Name of the event
+      required:
+        - type
+        - date
+        - price
+        - location
+        - name
+    EventUpdate:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [CONCERT, SPECTACLE, FESTIVAL]
+          description: Type of event
+        date:
+          type: string
+          format: date-time
+          description: Date and time of the event
+        price:
+          type: number
+          description: Price of the event
+        location:
+          type: string
+          description: Location where the event will take place
+        name:
+          type: string
+          description: Name of the event
+    ApiResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Response message
+        status:
+          type: integer
+          description: HTTP status code
+        data:
+          description: Response data
+          oneOf:
+            - $ref: '#/components/schemas/Event'
+            - type: array
+              items:
+                $ref: '#/components/schemas/Event'
+            - type: 'null'
+paths:
+  /:
+    post:
+      tags:
+        - Events
+      summary: Create a new event
+      description: Creates a new event with the provided details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventPayload'
+      responses:
+        '200':
+          description: Event created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Success
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/Event'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+                  status:
+                    type: integer
+                    example: 500
+                  data:
+                    type: 'null'
+    get:
+      tags:
+        - Events
+      summary: Get all events
+      description: Retrieves a list of all events
+      responses:
+        '200':
+          description: Events retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Success
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+        '404':
+          description: No events found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Not found
+                  status:
+                    type: integer
+                    example: 404
+                  data:
+                    type: array
+                    items: []
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+                  status:
+                    type: integer
+                    example: 500
+                  data:
+                    type: 'null'
+  /{id}:
+    get:
+      tags:
+        - Events
+      summary: Get event by ID
+      description: Retrieves an event by its unique identifier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the event
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Event retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Success
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/Event'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bad request
+                  status:
+                    type: integer
+                    example: 400
+                  data:
+                    type: 'null'
+        '404':
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Not found
+                  status:
+                    type: integer
+                    example: 404
+                  data:
+                    type: 'null'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+                  status:
+                    type: integer
+                    example: 500
+                  data:
+                    type: 'null'
+    put:
+      tags:
+        - Events
+      summary: Update an event
+      description: Updates an existing event with the provided details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the event
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdate'
+      responses:
+        '200':
+          description: Event updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Success
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/Event'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bad request
+                  status:
+                    type: integer
+                    example: 400
+                  data:
+                    type: 'null'
+        '404':
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Not found
+                  status:
+                    type: integer
+                    example: 404
+                  data:
+                    type: 'null'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+                  status:
+                    type: integer
+                    example: 500
+                  data:
+                    type: 'null'
+    delete:
+      tags:
+        - Events
+      summary: Delete an event
+      description: Deletes an event by its unique identifier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the event
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Event deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No content
+                  status:
+                    type: integer
+                    example: 204
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bad request
+                  status:
+                    type: integer
+                    example: 400
+                  data:
+                    type: 'null'
+        '404':
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Not found
+                  status:
+                    type: integer
+                    example: 404
+                  data:
+                    type: 'null'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+                  status:
+                    type: integer
+                    example: 500
+                  data:
+                    type: 'null'
+  /filter:
+    get:
+      tags:
+        - Events
+      summary: Filter events
+      description: Retrieves events based on location and/or type filters
+      parameters:
+        - name: location
+          in: query
+          required: false
+          description: Location to filter events by
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: false
+          description: Type of event to filter by
+          schema:
+            type: string
+            enum: [CONCERT, SPECTACLE, FESTIVAL]
+      responses:
+        '200':
+          description: Events retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Success
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+        '404':
+          description: No events found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No events found
+                  status:
+                    type: integer
+                    example: 404
+                  data:
+                    type: array
+                    items: []
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+                  status:
+                    type: integer
+                    example: 500
+                  data:
+                    type: 'null'
