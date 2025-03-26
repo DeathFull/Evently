@@ -7,7 +7,9 @@
     "dev": "tsx --watch .",
     "start": "node dist/",
     "lint": "biome check",
-    "build": "tsc -b ."
+    "build": "tsc -b .",
+    "seed": "tsx src/scripts/seed.ts",
+    "dev:seed": "SEED_USERS=true tsx --watch ."
   },
   "keywords": [],
   "author": "",

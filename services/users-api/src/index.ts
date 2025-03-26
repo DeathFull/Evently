@@ -1,6 +1,7 @@
 import { app } from "./app";
 import amqp from "amqplib";
 import UserRepository from "./repositories/UserRepository";
+import { seedUsers } from "./utils/seeder";
 
 const PORT = process.env.PORT || 3001;
 
@@ -57,5 +58,11 @@ async function consumeRequests() {
 app.listen(PORT, async () => {
   await connectRabbitMQ();
   await consumeRequests();
+  
+  // Seed users if SEED_USERS environment variable is set
+  if (process.env.SEED_USERS === "true") {
+    await seedUsers();
+  }
+  
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
