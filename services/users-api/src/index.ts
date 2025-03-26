@@ -1,5 +1,6 @@
 import { app } from "./app";
 import amqp from "amqplib";
+import UserRepository from "./repositories/UserRepository";
 
 const PORT = process.env.PORT || 3001;
 
@@ -27,19 +28,42 @@ async function consumeRequests() {
   channel.consume(
     requestQueue,
     async (msg) => {
+      if (!msg) return;
+      
       const requestData = JSON.parse(msg.content.toString());
-      const user = users[requestData.username] || null;
-
-      channel.sendToQueue(
-        msg?.properties.replyTo,
-        Buffer.from(JSON.stringify(user)),
-        {
-          correlationId: msg?.properties.correlationId,
-        },
-      );
+      console.log("Received user request:", requestData);
+      
+      try {
+        // Look up user by email
+        const user = requestData.email ? 
+          await UserRepository.getUserByEmail({ email: requestData.email }) : 
+          null;
+        
+        console.log("Found user:", user ? "yes" : "no");
+        
+        // Send response back
+        channel.sendToQueue(
+          msg.properties.replyTo,
+          Buffer.from(JSON.stringify(user)),
+          {
+            correlationId: msg.properties.correlationId,
+          }
+        );
+      } catch (error) {
+        console.error("Error processing user request:", error);
+        // Send error response
+        channel.sendToQueue(
+          msg.properties.replyTo,
+          Buffer.from(JSON.stringify(null)),
+          {
+            correlationId: msg.properties.correlationId,
+          }
+        );
+      }
     },
-    { noAck: true },
+    { noAck: true }
   );
+  console.log(`Listening for user requests on queue: ${requestQueue}`);
 }
 app.listen(PORT, async () => {
   await connectRabbitMQ();

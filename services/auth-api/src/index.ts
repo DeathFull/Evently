@@ -3,25 +3,35 @@ import amqp from "amqplib";
 
 const PORT = process.env.PORT || 3000;
 
-let channel: amqp.Channel;
-let connection: amqp.ChannelModel;
-const requestQueue = "user.request";
-const responseQueue = "user.response";
+// Export these so they can be used in the router
+export let channel: amqp.Channel;
+export let connection: amqp.Connection;
+export const requestQueue = "user.request";
+export const responseQueue = "user.response";
+export const responseMap = new Map();
 
 async function connectRabbitMQ() {
-  connection = await amqp.connect("amqp://localhost");
-  channel = await connection.createChannel();
-  await channel.assertQueue(requestQueue);
-  await channel.assertQueue(responseQueue);
+  try {
+    connection = await amqp.connect("amqp://localhost");
+    channel = await connection.createChannel();
+    await channel.assertQueue(requestQueue);
+    await channel.assertQueue(responseQueue);
+    console.log("✅ Connected to RabbitMQ");
+  } catch (error) {
+    console.error("❌ Failed to connect to RabbitMQ:", error);
+    process.exit(1);
+  }
 }
-
-const responseMap = new Map();
 
 async function consumeResponses() {
   channel.consume(
     responseQueue,
     (msg) => {
-      const correlationId = msg?.properties.correlationId;
+      if (!msg) return;
+      
+      const correlationId = msg.properties.correlationId;
+      console.log(`Received response with correlationId: ${correlationId}`);
+      
       if (responseMap.has(correlationId)) {
         const resolve = responseMap.get(correlationId);
         resolve(JSON.parse(msg.content.toString()));
@@ -30,6 +40,7 @@ async function consumeResponses() {
     },
     { noAck: true },
   );
+  console.log(`Listening for responses on queue: ${responseQueue}`);
 }
 app.listen(PORT, async () => {
   await connectRabbitMQ();
