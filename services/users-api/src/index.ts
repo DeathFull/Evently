@@ -2,6 +2,7 @@ import { app } from "./app";
 import amqp from "amqplib";
 import UserRepository from "./repositories/UserRepository";
 import { seedUsers } from "./utils/seeder";
+import connectDB from "./dbConnection.js";
 
 const PORT = process.env.PORT || 3001;
 
@@ -55,14 +56,22 @@ async function consumeRequests() {
   );
   console.log(`Listening for user requests on queue: ${requestQueue}`);
 }
-app.listen(PORT, async () => {
-  await connectRabbitMQ();
-  await consumeRequests();
-  
-  // Seed users if SEED_USERS environment variable is set
-  if (process.env.SEED_USERS === "true") {
-    await seedUsers();
-  }
-  
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
+console.log("Starting server initialization...");
+setTimeout(() => {
+  connectDB()
+    .then(() => {
+      app.listen(PORT, async () => {
+        await connectRabbitMQ();
+        await consumeRequests();
+
+        if (process.env.SEED_USERS === "true") {
+          await seedUsers();
+        }
+
+        console.log(`🎸 Server running at http://localhost:${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error("Failed to start server:", err);
+    });
+}, 1000);

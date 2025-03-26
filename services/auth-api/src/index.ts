@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3000;
 
 // Export these so they can be used in the router
 export let channel: amqp.Channel;
-export let connection: amqp.Connection;
+export let connection: amqp.ChannelModel;
 export const requestQueue = "user.request";
 export const responseQueue = "user.response";
 export const responseMap = new Map();
@@ -28,10 +28,10 @@ async function consumeResponses() {
     responseQueue,
     (msg) => {
       if (!msg) return;
-      
+
       const correlationId = msg.properties.correlationId;
       console.log(`Received response with correlationId: ${correlationId}`);
-      
+
       if (responseMap.has(correlationId)) {
         const resolve = responseMap.get(correlationId);
         resolve(JSON.parse(msg.content.toString()));

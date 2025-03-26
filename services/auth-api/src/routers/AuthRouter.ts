@@ -22,12 +22,12 @@ router.post(
     try {
       // Generate a unique correlation ID for this request
       const correlationId = Math.random().toString() + Date.now().toString();
-      
+
       // Create a promise that will be resolved when we get a response
       const userDataPromise = new Promise((resolve) => {
         responseMap.set(correlationId, resolve);
       });
-      
+
       // Send request to users-api via RabbitMQ
       channel.sendToQueue(
         requestQueue,
@@ -35,19 +35,23 @@ router.post(
         {
           correlationId,
           replyTo: responseQueue,
-        }
+        },
       );
-      
+
       // Wait for the response
-      const userData = await userDataPromise as any;
-      
+      const userData = (await userDataPromise) as any;
+
       if (!userData) {
-        return res.status(401).json({ message: "Invalid credentials", status: 401 });
+        return res
+          .status(401)
+          .json({ message: "Invalid credentials", status: 401 });
       }
 
       const isPasswordValid = await bcrypt.compare(password, userData.password);
       if (!isPasswordValid) {
-        return res.status(401).json({ message: "Invalid credentials", status: 401 });
+        return res
+          .status(401)
+          .json({ message: "Invalid credentials", status: 401 });
       }
 
       const token = jwt.sign(
