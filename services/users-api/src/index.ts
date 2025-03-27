@@ -28,9 +28,14 @@ async function consumeRequests() {
       console.log("Received user request:", requestData);
 
       try {
-        const user = requestData.email
-          ? await UserRepository.getUserByEmail({ email: requestData.email })
-          : null;
+        let user = null;
+        
+        // Check if request is by email or by id
+        if (requestData.email) {
+          user = await UserRepository.getUserByEmail({ email: requestData.email });
+        } else if (requestData.id) {
+          user = await UserRepository.getUserById({ id: requestData.id });
+        }
 
         console.log("Found user:", user ? "yes" : "no");
 

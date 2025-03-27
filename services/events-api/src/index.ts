@@ -5,3 +5,81 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
 	console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+import { app } from "./app";
+import amqp from "amqplib";
+import EventRepository from "./repositories/EventRepository";
+import connectDB from "./dbConnection";
+
+const PORT = process.env.PORT || 3003;
+
+let channel: amqp.Channel;
+let connection: amqp.Connection;
+const requestQueue = "event.request";
+
+async function connectRabbitMQ() {
+  try {
+    connection = await amqp.connect("amqp://localhost");
+    channel = await connection.createChannel();
+    await channel.assertQueue(requestQueue);
+    console.log("✅ Connected to RabbitMQ");
+  } catch (error) {
+    console.error("❌ Failed to connect to RabbitMQ:", error);
+    process.exit(1);
+  }
+}
+
+async function consumeRequests() {
+  channel.consume(
+    requestQueue,
+    async (msg) => {
+      if (!msg) return;
+
+      const requestData = JSON.parse(msg.content.toString());
+      console.log("Received event request:", requestData);
+
+      try {
+        // Look up event by id
+        const event = requestData.id ? 
+          await EventRepository.getEventById({ id: requestData.id }) : 
+          null;
+
+        console.log("Found event:", event ? "yes" : "no");
+
+        // Send response back
+        channel.sendToQueue(
+          msg.properties.replyTo,
+          Buffer.from(JSON.stringify(event)),
+          {
+            correlationId: msg.properties.correlationId,
+          }
+        );
+      } catch (error) {
+        console.error("Error processing event request:", error);
+        channel.sendToQueue(
+          msg.properties.replyTo,
+          Buffer.from(JSON.stringify(null)),
+          {
+            correlationId: msg.properties.correlationId,
+          }
+        );
+      }
+    },
+    { noAck: true }
+  );
+  console.log(`Listening for event requests on queue: ${requestQueue}`);
+}
+
+console.log("Starting events-api initialization...");
+setTimeout(() => {
+  connectDB()
+    .then(() => {
+      app.listen(PORT, async () => {
+        await connectRabbitMQ();
+        await consumeRequests();
+        console.log(`🎸 Events API running at http://localhost:${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error("Failed to start server:", err);
+    });
+}, 1000);
