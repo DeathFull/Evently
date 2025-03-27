@@ -4,7 +4,7 @@ import EventRepository from "./repositories/EventRepository";
 import connectDB from "./dbConnection";
 import { seedEvents } from "./utils/seeder";
 
-const PORT = process.env.PORT || 3003;
+const PORT = 3003;
 
 let channel: amqp.Channel;
 let connection: amqp.ChannelModel;
@@ -68,12 +68,11 @@ setTimeout(() => {
       app.listen(PORT, async () => {
         await connectRabbitMQ();
         await consumeRequests();
-        
-        // Seed events if SEED_EVENTS environment variable is set
+
         if (process.env.SEED_EVENTS === "true") {
           await seedEvents();
         }
-        
+
         console.log(`🎭 Events API running at http://localhost:${PORT}`);
       });
     })

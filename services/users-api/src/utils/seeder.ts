@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import UserRepository from "../repositories/UserRepository";
 import mongoose from "mongoose";
 
@@ -39,17 +38,13 @@ export async function seedUsers() {
       });
 
       if (!existingUser) {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(user.password, salt);
-
         await UserRepository.createUser({
           payload: {
             email: user.email,
-            password: hashedPassword,
+            password: user.password,
             firstName: user.firstName,
             lastName: user.lastName,
             phone: user.phone,
-            role: user.role as "ADMIN" | "OPERATOR" | "USER",
           },
         });
 
@@ -68,9 +63,7 @@ export async function seedUsers() {
 export async function runSeeder() {
   try {
     if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(
-        process.env.MONGODB_URI || "mongodb://localhost:27017/users-api",
-      );
+      await mongoose.connect("mongodb://localhost:27017/userApi");
       console.log("📊 Connected to MongoDB");
     }
 

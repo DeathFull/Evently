@@ -3,7 +3,6 @@ import amqp from "amqplib";
 
 const PORT = process.env.PORT || 3000;
 
-// Export these so they can be used in the router
 export let channel: amqp.Channel;
 export let connection: amqp.ChannelModel;
 export const requestQueue = "user.request";
@@ -45,5 +44,5 @@ async function consumeResponses() {
 app.listen(PORT, async () => {
   await connectRabbitMQ();
   await consumeResponses();
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🔒 Server running at http://localhost:${PORT}`);
 });

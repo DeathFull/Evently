@@ -85,7 +85,6 @@ class UserRepository {
 
   async getUsers(): Promise<User[]> {
     try {
-      console.log("🌱 Inside");
       return await UserModel.find();
     } catch (err) {
       console.log(err);

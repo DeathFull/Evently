@@ -4,7 +4,6 @@ import { processRequestBody } from "zod-express-middleware";
 import UserRepository from "../repositories/UserRepository.js";
 import { UserSchemaPayload } from "../schemas";
 import { normalizeUser } from "../utils/normalize";
-import { send } from "../../../auth-api/src/utils/send";
 
 const router = express.Router();
 
@@ -13,8 +12,6 @@ router.post(
   processRequestBody(UserSchemaPayload),
   async (req: Request, res: Response) => {
     try {
-      send("user.created", JSON.stringify(req.body));
-      console.log("____sent");
       const user = await UserRepository.createUser({ payload: req.body });
       if (user) {
         const data = normalizeUser({ user });
@@ -34,7 +31,6 @@ router.post(
 
 router.get("/", async (req: Request, res: Response) => {
   try {
-    console.log("____CICICICIC");
     const users = await UserRepository.getUsers();
     if (users) {
       const data = users.map((user) => normalizeUser({ user }));

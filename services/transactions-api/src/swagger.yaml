@@ -28,9 +28,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransactionInput'
+              $ref: "#/components/schemas/TransactionInput"
       responses:
-        '200':
+        "200":
           description: Transaction created successfully
           content:
             application/json:
@@ -44,8 +44,8 @@ paths:
                     type: integer
                     example: 200
                   data:
-                    $ref: '#/components/schemas/Transaction'
-        '404':
+                    $ref: "#/components/schemas/Transaction"
+        "404":
           description: User or Event not found
           content:
             application/json:
@@ -60,7 +60,7 @@ paths:
                     example: 404
                   data:
                     type: null
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:
@@ -91,7 +91,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Transaction found
           content:
             application/json:
@@ -105,8 +105,8 @@ paths:
                     type: integer
                     example: 200
                   data:
-                    $ref: '#/components/schemas/Transaction'
-        '404':
+                    $ref: "#/components/schemas/Transaction"
+        "404":
           description: Transaction not found
           content:
             application/json:
@@ -121,7 +121,7 @@ paths:
                     example: 404
                   data:
                     type: null
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 
-const SECRET_KEY = "your_secret_key";
+const SECRET_KEY = "supersecretkey";
 
 export default function verifyToken(
   req: Request,

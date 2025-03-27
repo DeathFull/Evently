@@ -1,18 +1,13 @@
 import express from "express";
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { processRequestBody } from "zod-express-middleware";
-import AuthRepository from "../repositories/AuthRepository";
-import { AuthSchemaPayload, RegisterSchemaPayload } from "../schema";
-import verifyToken from "../utils/verifyToken";
-import { receive, send } from "../utils/send";
+import { AuthSchemaPayload } from "../schema";
 import { channel, requestQueue, responseQueue, responseMap } from "../index";
 
-const SECRET_KEY = "your_secret_key";
+const SECRET_KEY = "supersecretkey";
 const router = express.Router();
-
-// connectRabbitMQ();
 
 router.post(
   "/login",
@@ -20,15 +15,12 @@ router.post(
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
     try {
-      // Generate a unique correlation ID for this request
       const correlationId = Math.random().toString() + Date.now().toString();
 
-      // Create a promise that will be resolved when we get a response
       const userDataPromise = new Promise((resolve) => {
         responseMap.set(correlationId, resolve);
       });
 
-      // Send request to users-api via RabbitMQ
       channel.sendToQueue(
         requestQueue,
         Buffer.from(JSON.stringify({ email })),
@@ -38,8 +30,13 @@ router.post(
         },
       );
 
-      // Wait for the response
-      const userData = (await userDataPromise) as any;
+      const userData = (await userDataPromise) as {
+        id: string;
+        email: string;
+        password: string;
+        firstName: string;
+        lastName: string;
+      };
 
       if (!userData) {
         return res
@@ -67,17 +64,5 @@ router.post(
     }
   },
 );
-
-router.get("/test", async (req: Request, res: Response) => {
-  console.log("Sending test message...");
-  send("user.created", "test-coucoucpqhsdfkjqlsd");
-  res.status(200).json({ message: "Test message sent", status: 200 });
-});
-
-router.get("/coucou", async (req: Request, res: Response) => {
-  receive("user.created");
-  console.log("_____coucou");
-  res.status(200).json({ message: "coucou", status: 200 });
-});
 
 export default router;

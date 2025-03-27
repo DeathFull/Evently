@@ -9,10 +9,6 @@ export const app = express();
 
 app.use(express.json());
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello from Express 5 with TypeScript and tsx! coucou");
-});
-
 app.use("/auth", AuthRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

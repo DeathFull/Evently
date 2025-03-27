@@ -29,10 +29,11 @@ async function consumeRequests() {
 
       try {
         let user = null;
-        
-        // Check if request is by email or by id
+
         if (requestData.email) {
-          user = await UserRepository.getUserByEmail({ email: requestData.email });
+          user = await UserRepository.getUserByEmail({
+            email: requestData.email,
+          });
         } else if (requestData.id) {
           user = await UserRepository.getUserById({ id: requestData.id });
         }
@@ -73,7 +74,7 @@ setTimeout(() => {
           await seedUsers();
         }
 
-        console.log(`🎸 Server running at http://localhost:${PORT}`);
+        console.log(`👨 Server running at http://localhost:${PORT}`);
       });
     })
     .catch((err) => {
