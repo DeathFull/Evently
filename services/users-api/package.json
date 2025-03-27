@@ -4,6 +4,8 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
+    "seed": "tsx src/scripts/seed.ts",
+    "dev:seed": "SEED_EVENTS=true tsx --watch .",
     "dev": "tsx --watch .",
     "start": "node dist/",
     "lint": "biome check",
