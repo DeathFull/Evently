@@ -1,11 +1,4 @@
-import { app } from "./app";
-
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-	console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
-import { app } from "./app";
+import app from "./app";
 import amqp from "amqplib";
 import EventRepository from "./repositories/EventRepository";
 import connectDB from "./dbConnection";
@@ -13,7 +6,7 @@ import connectDB from "./dbConnection";
 const PORT = process.env.PORT || 3003;
 
 let channel: amqp.Channel;
-let connection: amqp.Connection;
+let connection: amqp.ChannelModel;
 const requestQueue = "event.request";
 
 async function connectRabbitMQ() {
@@ -38,20 +31,18 @@ async function consumeRequests() {
       console.log("Received event request:", requestData);
 
       try {
-        // Look up event by id
-        const event = requestData.id ? 
-          await EventRepository.getEventById({ id: requestData.id }) : 
-          null;
+        const event = requestData.id
+          ? await EventRepository.getEventById({ id: requestData.id })
+          : null;
 
         console.log("Found event:", event ? "yes" : "no");
 
-        // Send response back
         channel.sendToQueue(
           msg.properties.replyTo,
           Buffer.from(JSON.stringify(event)),
           {
             correlationId: msg.properties.correlationId,
-          }
+          },
         );
       } catch (error) {
         console.error("Error processing event request:", error);
@@ -60,11 +51,11 @@ async function consumeRequests() {
           Buffer.from(JSON.stringify(null)),
           {
             correlationId: msg.properties.correlationId,
-          }
+          },
         );
       }
     },
-    { noAck: true }
+    { noAck: true },
   );
   console.log(`Listening for event requests on queue: ${requestQueue}`);
 }
@@ -76,7 +67,7 @@ setTimeout(() => {
       app.listen(PORT, async () => {
         await connectRabbitMQ();
         await consumeRequests();
-        console.log(`🎸 Events API running at http://localhost:${PORT}`);
+        console.log(`🎭 Events API running at http://localhost:${PORT}`);
       });
     })
     .catch((err) => {
