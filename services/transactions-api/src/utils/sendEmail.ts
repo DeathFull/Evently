@@ -45,3 +45,50 @@ export default function sendMail({
   console.log("Sending email...");
   console.log(emailContent);
 }
+/**
+ * Utility function to send email notifications for transactions
+ * This is a mock implementation - in a real application, you would
+ * integrate with an email service like SendGrid, Mailgun, etc.
+ */
+
+interface User {
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
+interface Event {
+  name: string;
+  location: string;
+  date: Date;
+  type: "CONCERT" | "SPECTACLE" | "FESTIVAL";
+}
+
+export default function sendEmail({ 
+  user, 
+  event 
+}: { 
+  user: User; 
+  event: Event;
+}): void {
+  // In a real implementation, this would send an actual email
+  console.log(`
+    ✉️ Sending email to: ${user.email}
+    Subject: Your ticket for ${event.name}
+    
+    Dear ${user.firstName} ${user.lastName},
+    
+    Thank you for your purchase! Your ticket for ${event.name} has been confirmed.
+    
+    Event Details:
+    - Name: ${event.name}
+    - Type: ${event.type}
+    - Date: ${new Date(event.date).toLocaleDateString()}
+    - Location: ${event.location}
+    
+    Please arrive 30 minutes before the event starts.
+    
+    Regards,
+    The Evently Team
+  `);
+}

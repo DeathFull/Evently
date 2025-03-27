@@ -17,3 +17,27 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 export default app;
+import express from "express";
+import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import { loadSwaggerDocument } from "./utils/swagger";
+import TransactionRouter from "./routers/TransactionRouter";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// Set up Swagger documentation
+(async () => {
+  try {
+    const swaggerDocument = await loadSwaggerDocument();
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  } catch (error) {
+    console.error("Failed to set up Swagger:", error);
+  }
+})();
+
+app.use("/transactions", TransactionRouter);
+
+export default app;
