@@ -1,0 +1,29 @@
+### Get all users
+GET http://localhost:3001/users
+
+### Get user by ID (replace with actual ID)
+GET http://localhost:3001/users/64f5a7b1c2d3e4f5a6b7c8d9
+
+### Create a new user
+POST http://localhost:3001/users
+Content-Type: application/json
+
+{
+  "email": "newuser@example.com",
+  "password": "password123",
+  "firstName": "New",
+  "lastName": "User",
+  "phone": "+33612345678"
+}
+
+### Update a user (replace with actual ID)
+PUT http://localhost:3001/users/64f5a7b1c2d3e4f5a6b7c8d9
+Content-Type: application/json
+
+{
+  "firstName": "Updated",
+  "lastName": "User"
+}
+
+### Delete a user (replace with actual ID)
+DELETE http://localhost:3001/users/64f5a7b1c2d3e4f5a6b7c8d9

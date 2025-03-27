@@ -1,0 +1,38 @@
+### Get all events
+GET http://localhost:3003/events
+
+### Get event by ID (replace with actual ID)
+GET http://localhost:3003/events/64f5a7b1c2d3e4f5a6b7c8d9
+
+### Create a new event
+POST http://localhost:3003/events
+Content-Type: application/json
+
+{
+  "name": "New Concert 2025",
+  "type": "CONCERT",
+  "date": "2025-09-15T19:00:00.000Z",
+  "price": 59.99,
+  "location": "Bordeaux"
+}
+
+### Update an event (replace with actual ID)
+PUT http://localhost:3003/events/64f5a7b1c2d3e4f5a6b7c8d9
+Content-Type: application/json
+
+{
+  "price": 69.99,
+  "location": "Toulouse"
+}
+
+### Delete an event (replace with actual ID)
+DELETE http://localhost:3003/events/64f5a7b1c2d3e4f5a6b7c8d9
+
+### Filter events by location
+GET http://localhost:3003/events/filter?location=Paris
+
+### Filter events by type
+GET http://localhost:3003/events/filter?type=CONCERT
+
+### Filter events by name
+GET http://localhost:3003/events/filter?name=Rock
