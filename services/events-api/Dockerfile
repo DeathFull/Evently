@@ -19,6 +19,8 @@ COPY /services/events-api/src ./src
 COPY /services/events-api/tsconfig.json ./
 RUN pnpm build
 
+COPY /services/events-api/src/swagger.yaml ./dist/
+
 FROM base AS deps
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./

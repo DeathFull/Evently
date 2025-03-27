@@ -19,6 +19,8 @@ COPY /services/users-api/src ./src
 COPY /services/users-api/tsconfig.json ./
 RUN pnpm build
 
+COPY /services/users-api/src/swagger.yaml ./dist/
+
 FROM base AS deps
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./

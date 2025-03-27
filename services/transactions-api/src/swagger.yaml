@@ -1,0 +1,213 @@
+openapi: 3.0.0
+info:
+  title: Transactions API
+  description: API for managing event ticket transactions
+  version: 1.0.0
+  contact:
+    email: support@evently.com
+
+servers:
+  - url: http://localhost:3002
+    description: Local development server
+
+tags:
+  - name: Transactions
+    description: Transaction operations
+
+paths:
+  /transactions:
+    post:
+      tags:
+        - Transactions
+      summary: Create a new transaction
+      description: Create a new transaction for an event ticket purchase
+      operationId: createTransaction
+      requestBody:
+        description: Transaction details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionInput"
+      responses:
+        "200":
+          description: Transaction created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Success
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: "#/components/schemas/Transaction"
+        "404":
+          description: User or Event not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User not found
+                  status:
+                    type: integer
+                    example: 404
+                  data:
+                    type: null
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+                  status:
+                    type: integer
+                    example: 500
+                  data:
+                    type: null
+
+  /transactions/{id}:
+    get:
+      tags:
+        - Transactions
+      summary: Get transaction by ID
+      description: Retrieve a transaction by its ID
+      operationId: getTransactionById
+      parameters:
+        - name: id
+          in: path
+          description: Transaction ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transaction found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Success
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: "#/components/schemas/Transaction"
+        "404":
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Not found
+                  status:
+                    type: integer
+                    example: 404
+                  data:
+                    type: null
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+                  status:
+                    type: integer
+                    example: 500
+                  data:
+                    type: null
+
+components:
+  schemas:
+    TransactionInput:
+      type: object
+      required:
+        - userId
+        - eventId
+        - amount
+        - status
+      properties:
+        userId:
+          type: string
+          description: ID of the user making the transaction
+          example: 60d21b4667d0d8992e610c85
+        eventId:
+          type: string
+          description: ID of the event being purchased
+          example: 60d21b4667d0d8992e610c86
+        amount:
+          type: number
+          description: Transaction amount
+          example: 49.99
+        status:
+          type: string
+          description: Transaction status
+          enum: [PENDING, COMPLETED, FAILED, REFUNDED]
+          example: COMPLETED
+        paymentMethod:
+          type: string
+          description: Method of payment
+          example: CREDIT_CARD
+
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Transaction ID
+          example: 60d21b4667d0d8992e610c87
+        userId:
+          type: string
+          description: ID of the user making the transaction
+          example: 60d21b4667d0d8992e610c85
+        eventId:
+          type: string
+          description: ID of the event being purchased
+          example: 60d21b4667d0d8992e610c86
+        amount:
+          type: number
+          description: Transaction amount
+          example: 49.99
+        status:
+          type: string
+          description: Transaction status
+          enum: [PENDING, COMPLETED, FAILED, REFUNDED]
+          example: COMPLETED
+        paymentMethod:
+          type: string
+          description: Method of payment
+          example: CREDIT_CARD
+        reference:
+          type: string
+          description: Unique transaction reference
+          example: a7f3d9
+        createdAt:
+          type: string
+          format: date-time
+          description: Transaction creation timestamp
+          example: 2025-03-27T14:30:00Z
+        updatedAt:
+          type: string
+          format: date-time
+          description: Transaction last update timestamp
+          example: 2025-03-27T14:30:00Z

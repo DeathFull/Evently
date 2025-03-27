@@ -3,23 +3,64 @@ services:
     image: ghcr.io/deathfull/evently-auth-api:dev
     ports:
       - "3000:3000"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
     deploy:
       replicas: 2
+    depends_on:
+      - rabbitmq
   events-api:
     image: ghcr.io/deathfull/evently-events-api:dev
     ports:
       - "3001:3000"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+      - MONGO_URI=mongodb://events_mongodb:27017/eventApi
     deploy:
       replicas: 2
+    depends_on:
+      - rabbitmq
+      - events_mongodb
   transactions-api:
     image: ghcr.io/deathfull/evently-transactions-api:dev
     ports:
       - "3002:3000"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+      - MONGO_URI=mongodb://transactions_mongodb:27017/transactionApi
     deploy:
       replicas: 2
+    depends_on:
+      - rabbitmq
+      - transactions_mongodb
   users-api:
     image: ghcr.io/deathfull/evently-users-api:dev
     ports:
       - "3003:3000"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+      - MONGO_URI=mongodb://users_mongodb:27017/userApi
     deploy:
       replicas: 2
+    depends_on:
+      - rabbitmq
+      - users_mongodb
+  rabbitmq:
+    image: rabbitmq:3-alpine
+  events_mongodb:
+    image: mongo:latest
+    volumes:
+      - mongo_data_event:/data/db
+  transactions_mongodb:
+    image: mongo:latest
+    volumes:
+      - mongo_data_transaction:/data/db
+  users_mongodb:
+    image: mongo:latest
+    volumes:
+      - mongo_data_user:/data/db
+
+volumes:
+  mongo_data_event:
+  mongo_data_transaction:
+  mongo_data_user:

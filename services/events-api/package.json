@@ -7,12 +7,15 @@
 		"dev": "tsx --watch .",
 		"start": "node dist/",
 		"lint": "biome check",
-		"build": "tsc -b ."
+		"build": "tsc -b .",
+		"seed": "tsx src/scripts/seed.ts",
+		"dev:seed": "SEED_EVENTS=true tsx --watch ."
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"amqplib": "^0.10.5",
 		"bcrypt": "^5.1.1",
 		"cors": "^2.8.5",
 		"express": "^4.17.1",
@@ -24,6 +27,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
+		"@types/amqplib": "^0.10.7",
 		"@types/bcrypt": "^5.0.2",
 		"@types/cors": "^2.8.17",
 		"@types/express": "^4.17.21",

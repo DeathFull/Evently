@@ -105,11 +105,12 @@ router.put("/:id", async (req, res) => {
 
 router.get("/filter", async (req: Request, res: Response) => {
 	try {
-		const { location, type } = req.query;
+		const { location, type, name } = req.query;
 
 		const filter: {
 			location?: string;
 			type?: "CONCERT" | "SPECTACLE" | "FESTIVAL";
+			name?: string;
 		} = {};
 
 		if (typeof location === "string") {
@@ -118,6 +119,10 @@ router.get("/filter", async (req: Request, res: Response) => {
 
 		if (type === "CONCERT" || type === "SPECTACLE" || type === "FESTIVAL") {
 			filter.type = type;
+		}
+
+		if (typeof name === "string") {
+			filter.name = name;
 		}
 
 		const events = await EventRepository.getEventsByFilter({ filter });

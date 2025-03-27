@@ -7,23 +7,27 @@ import { normalizeUser } from "../utils/normalize";
 
 const router = express.Router();
 
-router.post("/", processRequestBody(UserSchemaPayload), async (req, res) => {
-	try {
-		const user = await UserRepository.createUser({ payload: req.body });
-		if (user) {
-			const data = normalizeUser({ user });
-			res.status(200).json({ message: "Success", status: 200, data: data });
-		} else {
+router.post(
+	"/",
+	processRequestBody(UserSchemaPayload),
+	async (req: Request, res: Response) => {
+		try {
+			const user = await UserRepository.createUser({ payload: req.body });
+			if (user) {
+				const data = normalizeUser({ user });
+				res.status(200).json({ message: "Success", status: 200, data: data });
+			} else {
+				res
+					.status(500)
+					.json({ message: "Internal server error", status: 500, data: null });
+			}
+		} catch (error) {
 			res
 				.status(500)
 				.json({ message: "Internal server error", status: 500, data: null });
 		}
-	} catch (error) {
-		res
-			.status(500)
-			.json({ message: "Internal server error", status: 500, data: null });
-	}
-});
+	},
+);
 
 router.get("/", async (req: Request, res: Response) => {
 	try {
@@ -41,7 +45,7 @@ router.get("/", async (req: Request, res: Response) => {
 	}
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
 		if (!id) {
@@ -63,7 +67,7 @@ router.get("/:id", async (req, res) => {
 	}
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
 		if (!id) {
@@ -84,7 +88,7 @@ router.delete("/:id", async (req, res) => {
 	}
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
 		const { emailAddress, firstName, lastName, password, rib, avatar } =

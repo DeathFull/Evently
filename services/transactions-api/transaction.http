@@ -1,0 +1,39 @@
+### Get transaction by ID (replace with actual ID)
+GET http://localhost:3002/transactions/64f5a7b1c2d3e4f5a6b7c8d9
+
+### Create a new transaction
+# Note: You need valid user ID and event ID
+POST http://localhost:3002/transactions
+Content-Type: application/json
+
+{
+  "userId": "64f5a7b1c2d3e4f5a6b7c8d9",
+  "eventId": "64f5a7b1c2d3e4f5a6b7c8d8",
+  "amount": 59.99,
+  "status": "COMPLETED",
+  "paymentMethod": "CREDIT_CARD"
+}
+
+### Create a transaction with invalid user ID
+POST http://localhost:3002/transactions
+Content-Type: application/json
+
+{
+  "userId": "111111111111111111111111",
+  "eventId": "64f5a7b1c2d3e4f5a6b7c8d8",
+  "amount": 59.99,
+  "status": "COMPLETED",
+  "paymentMethod": "CREDIT_CARD"
+}
+
+### Create a transaction with invalid event ID
+POST http://localhost:3002/transactions
+Content-Type: application/json
+
+{
+  "userId": "64f5a7b1c2d3e4f5a6b7c8d9",
+  "eventId": "111111111111111111111111",
+  "amount": 59.99,
+  "status": "COMPLETED",
+  "paymentMethod": "CREDIT_CARD"
+}

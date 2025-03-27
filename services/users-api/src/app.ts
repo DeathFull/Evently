@@ -35,6 +35,7 @@ let swaggerDocument = null;
 loadSwaggerDocument()
 	.then((document) => {
 		swaggerDocument = document;
+		// @ts-ignore
 		app.use("/api-doc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 	})
 	.catch((error) => {
@@ -45,3 +46,5 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 	console.error(err.stack);
 	res.status(500).send("Something broke!");
 });
+
+export default app;

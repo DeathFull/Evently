@@ -58,12 +58,17 @@ class EventRepository {
 	async getEventsByFilter({
 		filter,
 	}: {
-		filter: { location?: string; type?: "CONCERT" | "SPECTACLE" | "FESTIVAL" };
+		filter: {
+			location?: string;
+			type?: "CONCERT" | "SPECTACLE" | "FESTIVAL";
+			name?: string;
+		};
 	}): Promise<Event[]> {
 		try {
 			const query: {
 				location?: string;
 				type?: "CONCERT" | "SPECTACLE" | "FESTIVAL";
+				name?: string;
 			} = {};
 
 			if (filter.location) {
@@ -72,6 +77,10 @@ class EventRepository {
 
 			if (filter.type) {
 				query.type = filter.type;
+			}
+
+			if (filter.name) {
+				query.name = filter.name;
 			}
 
 			return await EventModel.find(query);
