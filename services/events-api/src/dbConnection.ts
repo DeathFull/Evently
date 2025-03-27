@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = "mongodb://localhost:27018/eventApi";
+const MONGODB_URI =
+	process.env.MONGO_URI || "mongodb://localhost:27018/eventApi";
 
 async function connectDB() {
 	try {

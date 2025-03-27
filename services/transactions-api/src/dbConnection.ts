@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = "mongodb://localhost:27019/transactionApi";
+const MONGODB_URI =
+	process.env.MONGO_URI || "mongodb://localhost:27019/transactionApi";
 
 async function connectDB() {
 	try {
