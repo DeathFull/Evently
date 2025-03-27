@@ -35,6 +35,7 @@ let swaggerDocument = null;
 loadSwaggerDocument()
 	.then((document) => {
 		swaggerDocument = document;
+		// @ts-ignore
 		app.use("/api-doc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 	})
 	.catch((error) => {

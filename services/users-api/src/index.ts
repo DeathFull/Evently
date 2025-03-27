@@ -12,7 +12,8 @@ const requestQueue = "user.request";
 const responseQueue = "user.response";
 
 async function connectRabbitMQ() {
-	connection = await amqp.connect("amqp://localhost");
+	const rabbitMQUrl = process.env.RABBITMQ_URL || "amqp://localhost";
+	connection = await amqp.connect(rabbitMQUrl);
 	channel = await connection.createChannel();
 	await channel.assertQueue(requestQueue);
 	await channel.assertQueue(responseQueue);

@@ -11,8 +11,9 @@ let connection: amqp.ChannelModel;
 const requestQueue = "event.request";
 
 async function connectRabbitMQ() {
+	const rabbitMQUrl = process.env.RABBITMQ_URL || "amqp://localhost";
 	try {
-		connection = await amqp.connect("amqp://localhost");
+		connection = await amqp.connect(rabbitMQUrl);
 		channel = await connection.createChannel();
 		await channel.assertQueue(requestQueue);
 		console.log("✅ Connected to RabbitMQ");

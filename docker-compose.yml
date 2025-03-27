@@ -3,23 +3,41 @@ services:
     image: ghcr.io/deathfull/evently-auth-api:dev
     ports:
       - "3000:3000"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
     deploy:
       replicas: 2
+    depends_on:
+      - rabbitmq
   events-api:
     image: ghcr.io/deathfull/evently-events-api:dev
     ports:
       - "3001:3000"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
     deploy:
       replicas: 2
+    depends_on:
+      - rabbitmq
   transactions-api:
     image: ghcr.io/deathfull/evently-transactions-api:dev
     ports:
       - "3002:3000"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
     deploy:
       replicas: 2
+    depends_on:
+      - rabbitmq
   users-api:
     image: ghcr.io/deathfull/evently-users-api:dev
     ports:
       - "3003:3000"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
     deploy:
       replicas: 2
+    depends_on:
+      - rabbitmq
+  rabbitmq:
+    image: rabbitmq:3-alpine

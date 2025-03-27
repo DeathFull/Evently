@@ -15,6 +15,7 @@ export default function verifyToken(
 	}
 	try {
 		const decoded = jwt.verify(token, SECRET_KEY);
+		// @ts-ignore
 		req.user = decoded;
 		next();
 	} catch (error) {
