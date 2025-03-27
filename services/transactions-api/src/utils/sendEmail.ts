@@ -1,28 +1,28 @@
 export default function sendMail({
-  user,
-  event,
+	user,
+	event,
 }: {
-  user: {
-    email: string;
-    firstName: string;
-    lastName: string;
-  };
-  event: {
-    name: string;
-    location: string;
-    date: Date;
-    type: "CONCERT" | "SPECTACLE" | "FESTIVAL";
-  };
+	user: {
+		email: string;
+		firstName: string;
+		lastName: string;
+	};
+	event: {
+		name: string;
+		location: string;
+		date: Date;
+		type: "CONCERT" | "SPECTACLE" | "FESTIVAL";
+	};
 }) {
-  const date = new Date(event.date);
-  const formattedDate = date.toLocaleDateString("fr-FR", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+	const date = new Date(event.date);
+	const formattedDate = date.toLocaleDateString("fr-FR", {
+		weekday: "long",
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
 
-  const emailContent = `
+	const emailContent = `
     De: noreply@evenement.com
     À: ${user.email}
     Objet: Confirmation de réservation - ${event.name}
@@ -42,6 +42,6 @@ export default function sendMail({
     L'équipe Evently
   `;
 
-  console.log("Sending email...");
-  console.log(emailContent);
+	console.log("Sending email...");
+	console.log(emailContent);
 }

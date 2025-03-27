@@ -1,88 +1,88 @@
-import UserRepository from "../repositories/UserRepository";
 import mongoose from "mongoose";
+import UserRepository from "../repositories/UserRepository";
 
 const users = [
-  {
-    email: "admin@example.com",
-    password: "admin123",
-    firstName: "Admin",
-    lastName: "User",
-    phone: "+33612345678",
-    role: "ADMIN",
-  },
-  {
-    email: "operator@example.com",
-    password: "operator123",
-    firstName: "Operator",
-    lastName: "User",
-    phone: "+33623456789",
-    role: "OPERATOR",
-  },
-  {
-    email: "user@example.com",
-    password: "user123",
-    firstName: "Regular",
-    lastName: "User",
-    phone: "+33634567890",
-    role: "USER",
-  },
+	{
+		email: "admin@example.com",
+		password: "admin123",
+		firstName: "Admin",
+		lastName: "User",
+		phone: "+33612345678",
+		role: "ADMIN",
+	},
+	{
+		email: "operator@example.com",
+		password: "operator123",
+		firstName: "Operator",
+		lastName: "User",
+		phone: "+33623456789",
+		role: "OPERATOR",
+	},
+	{
+		email: "user@example.com",
+		password: "user123",
+		firstName: "Regular",
+		lastName: "User",
+		phone: "+33634567890",
+		role: "USER",
+	},
 ];
 
 export async function seedUsers() {
-  console.log("🌱 Starting user seeding...");
+	console.log("🌱 Starting user seeding...");
 
-  try {
-    for (const user of users) {
-      const existingUser = await UserRepository.getUserByEmail({
-        email: user.email,
-      });
+	try {
+		for (const user of users) {
+			const existingUser = await UserRepository.getUserByEmail({
+				email: user.email,
+			});
 
-      if (!existingUser) {
-        await UserRepository.createUser({
-          payload: {
-            email: user.email,
-            password: user.password,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            phone: user.phone,
-          },
-        });
+			if (!existingUser) {
+				await UserRepository.createUser({
+					payload: {
+						email: user.email,
+						password: user.password,
+						firstName: user.firstName,
+						lastName: user.lastName,
+						phone: user.phone,
+					},
+				});
 
-        console.log(`✅ Created user: ${user.email}`);
-      } else {
-        console.log(`⏩ User already exists: ${user.email}`);
-      }
-    }
+				console.log(`✅ Created user: ${user.email}`);
+			} else {
+				console.log(`⏩ User already exists: ${user.email}`);
+			}
+		}
 
-    console.log("✅ User seeding completed successfully");
-  } catch (error) {
-    console.error("❌ Error seeding users:", error);
-  }
+		console.log("✅ User seeding completed successfully");
+	} catch (error) {
+		console.error("❌ Error seeding users:", error);
+	}
 }
 
 export async function runSeeder() {
-  try {
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect("mongodb://localhost:27017/userApi");
-      console.log("📊 Connected to MongoDB");
-    }
+	try {
+		if (mongoose.connection.readyState === 0) {
+			await mongoose.connect("mongodb://localhost:27017/userApi");
+			console.log("📊 Connected to MongoDB");
+		}
 
-    await seedUsers();
+		await seedUsers();
 
-    if (mongoose.connection.readyState === 1) {
-      await mongoose.disconnect();
-      console.log("📊 Disconnected from MongoDB");
-    }
-  } catch (error) {
-    console.error("❌ Seeder error:", error);
-  }
+		if (mongoose.connection.readyState === 1) {
+			await mongoose.disconnect();
+			console.log("📊 Disconnected from MongoDB");
+		}
+	} catch (error) {
+		console.error("❌ Seeder error:", error);
+	}
 }
 
 if (require.main === module) {
-  runSeeder()
-    .then(() => process.exit(0))
-    .catch((error) => {
-      console.error("Fatal error:", error);
-      process.exit(1);
-    });
+	runSeeder()
+		.then(() => process.exit(0))
+		.catch((error) => {
+			console.error("Fatal error:", error);
+			process.exit(1);
+		});
 }

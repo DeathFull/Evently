@@ -1,7 +1,7 @@
 import express, {
-  type NextFunction,
-  type Request,
-  type Response,
+	type NextFunction,
+	type Request,
+	type Response,
 } from "express";
 import AuthRouter from "./routers/AuthRouter";
 
@@ -12,6 +12,6 @@ app.use(express.json());
 app.use("/auth", AuthRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
+	console.error(err.stack);
+	res.status(500).send("Something broke!");
 });
