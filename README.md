@@ -1,84 +1,220 @@
-# Turborepo starter
+# Microservices API Platform
 
-This Turborepo starter is maintained by the Turborepo core team.
-
-## Using this example
-
-Run the following command:
-
-```sh
-npx create-turbo@latest
-```
+A modern microservices-based API platform built with TypeScript, Express, and MongoDB. This project uses Turborepo to manage the monorepo structure and Docker for containerization.
 
 ## What's inside?
 
-This Turborepo includes the following packages/apps:
+This platform includes the following microservices:
 
-### Apps and Packages
+### Services
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `auth-api`: Authentication and authorization service
+- `users-api`: User management service
+- `events-api`: Event management service
+- `transactions-api`: Transaction processing service
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+Each service is 100% [TypeScript](https://www.typescriptlang.org/) and follows a consistent architecture pattern.
 
-### Utilities
+## Development
 
-This Turborepo has some additional tools already setup for you:
+### Prerequisites
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+- Node.js (v16+)
+- pnpm
+- Docker and Docker Compose
 
-### Build
+### Local Development
 
-To build all apps and packages, run the following command:
+To develop all services locally, run:
 
-```
-cd my-turborepo
-pnpm build
-```
+```bash
+# Install dependencies
+pnpm install
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
+# Start all services in development mode
 pnpm dev
 ```
 
-### Remote Caching
+### Building
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+To build all services:
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
+```bash
+pnpm build
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### Testing
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+To run tests across all services:
 
+```bash
+pnpm test
 ```
-npx turbo link
+
+## Docker Deployment
+
+### Local Docker Compose
+
+For local testing with Docker Compose:
+
+```bash
+# Build and start all services
+docker-compose up -d
+
+# Stop all services
+docker-compose down
 ```
+
+## Docker Swarm Deployment
+
+### Prerequisites
+
+- A Docker Swarm cluster (can be a single-node swarm for testing)
+- Docker registry access (Docker Hub or private registry)
+
+### Initialize Docker Swarm
+
+If you haven't already initialized a swarm:
+
+```bash
+docker swarm init
+```
+
+### Build and Push Images
+
+Before deploying to the swarm, build and push your images:
+
+```bash
+# Build all service images
+./scripts/docker-build.sh
+
+# Tag images for your registry
+docker tag auth-api:latest yourregistry/auth-api:latest
+docker tag users-api:latest yourregistry/users-api:latest
+docker tag events-api:latest yourregistry/events-api:latest
+docker tag transactions-api:latest yourregistry/transactions-api:latest
+
+# Push images to registry
+docker push yourregistry/auth-api:latest
+docker push yourregistry/users-api:latest
+docker push yourregistry/events-api:latest
+docker push yourregistry/transactions-api:latest
+```
+
+### Deploy to Swarm
+
+Create a `docker-stack.yml` file for swarm deployment:
+
+```yaml
+version: '3.8'
+
+services:
+  auth-api:
+    image: yourregistry/auth-api:latest
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "3001:3001"
+    networks:
+      - api-network
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/auth
+
+  users-api:
+    image: yourregistry/users-api:latest
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "3002:3002"
+    networks:
+      - api-network
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/users
+
+  events-api:
+    image: yourregistry/events-api:latest
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "3003:3003"
+    networks:
+      - api-network
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/events
+
+  transactions-api:
+    image: yourregistry/transactions-api:latest
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "3004:3004"
+    networks:
+      - api-network
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/transactions
+
+  mongodb:
+    image: mongo:latest
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - api-network
+
+networks:
+  api-network:
+    driver: overlay
+
+volumes:
+  mongodb_data:
+```
+
+Deploy the stack to your swarm:
+
+```bash
+docker stack deploy -c docker-stack.yml api-platform
+```
+
+### Managing the Swarm Deployment
+
+```bash
+# List all running services
+docker service ls
+
+# Scale a specific service
+docker service scale api-platform_users-api=3
+
+# View logs for a service
+docker service logs api-platform_users-api
+
+# Remove the stack
+docker stack rm api-platform
+```
+
+## Monitoring and Management
+
+For production deployments, consider adding:
+
+- Prometheus for metrics
+- Grafana for visualization
+- Traefik or Nginx for API gateway/load balancing
 
 ## Useful Links
 
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+- [Docker Swarm documentation](https://docs.docker.com/engine/swarm/)
+- [Turborepo documentation](https://turbo.build/repo/docs)
